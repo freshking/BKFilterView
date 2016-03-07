@@ -57,6 +57,11 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
     
     //MARK:- BKFilterViewDelegate
     
+    internal func exculdedViews() -> [UIView]?
+    {
+        return nil
+    }
+    
     internal func manipulateFilterContext(inout context: CGContext, rect: CGRect) {
         
         var filterValues = [String: AnyObject?]()
@@ -72,7 +77,7 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
             filterValues["inputScale"] = NSNumber(float: 1.0) // default 0.50
         }
         
-        BKFilter.setType(&context, rect: rect, type: filterType, filerValues: filterValues)
+        BKFilter.filter(&context, rect: rect, type: filterType, filerValues: filterValues)
     }
     
     //MARK:- Private functions

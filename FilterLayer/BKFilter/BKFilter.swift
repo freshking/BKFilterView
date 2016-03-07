@@ -12,7 +12,7 @@ class BKFilter {
     
     //MARK:- Base filter
     
-    class func setType(inout context: CGContext, rect: CGRect, type: BKFilterType, filerValues: [String: AnyObject?]?)
+    class func filter(inout context: CGContext, rect: CGRect, type: BKFilterType, filerValues: [String: AnyObject?]?)
     {
         let originalImage: CGImageRef = CGBitmapContextCreateImage(context)!
         let ciImage: CIImage = CIImage(CGImage: originalImage)

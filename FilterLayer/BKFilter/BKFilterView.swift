@@ -11,6 +11,7 @@ import UIKit
 // TODO: having to render alpha slows down performance of the filterview immense. find fix.
 
 protocol BKFilterViewDelegate: class {
+    func exculdedViews() -> [UIView]?
     func manipulateFilterContext(inout context: CGContext, rect: CGRect)
 }
 
@@ -49,9 +50,12 @@ class BKFilterView: UIView {
         
         if let layer = UIApplication.sharedApplication().delegate?.window??.layer ?? UIApplication.sharedApplication().keyWindow?.layer {
             let scale = UIScreen.mainScreen().scale
+        
+            // get views that should be excluded from the screenshot
+            let excludedViews: [UIView]? = delegate?.exculdedViews()
             
-            // make self invisible (so that we don't make a screenshot of it)
-            self.alpha = 0.0
+            // make views invisible (so that we don't make a screenshot of it)
+            self.setAlphaForViews(excludedViews, alpha: 0.0)
             
             // get partial screenshow
             var screenshot: UIImage?
@@ -70,8 +74,20 @@ class BKFilterView: UIView {
             var context = UIGraphicsGetCurrentContext()!
             delegate?.manipulateFilterContext(&context, rect: rect)
             
-            // make self visible again
-            self.alpha = 1.0
+            // make views visible again
+            self.setAlphaForViews(excludedViews, alpha: 1.0)
+        }
+    }
+    
+    //MARK:- Private methods
+    
+    private func setAlphaForViews(views: [UIView]?, alpha: CGFloat)
+    {
+        self.alpha = alpha
+        if views != nil && views!.count > 0 {
+            for view in views! {
+                view.alpha = alpha
+            }
         }
     }
 }
