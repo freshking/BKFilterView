@@ -39,7 +39,7 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
     
     internal func setFiltertype(type: BKFilterType) {
         
-        self.title = type.getCIFilterName()
+        self.title = type.rawValue
         filterType = type
         
         let a: CGFloat = 150.0

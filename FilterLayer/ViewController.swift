@@ -8,34 +8,18 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    
-    private let filters: [BKFilterType] = [
-        .ColorCrossPolynomial,
-        .ColorCube,
-        .ColorCubeWithColorSpace,
-        .ColorInvert,
-        .ColorMap,
-        .ColorMonochrome,
-        .ColorPosterize,
-        .FalseColor,
-        .MaskToAlpha,
-        .MaximumComponent,
-        .MinimumComponent,
-        .PhotoEffectChrome,
-        .PhotoEffectFade,
-        .PhotoEffectInstant,
-        .PhotoEffectMono,
-        .PhotoEffectNoir,
-        .PhotoEffectProcess,
-        .PhotoEffectTonal,
-        .PhotoEffectTransfer,
-        .SepiaTone,
-        .Vignette]
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {    
 
+    private var categories: [String]!
+    private var filters: [[BKFilterType]]!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.whiteColor()
+        
+        let collection: [String: [BKFilterType]] = BKFilterType.collection
+        categories = Array(collection.keys)
+        filters = Array(collection.values)
         
         let tableView = UITableView(frame: CGRectMake(0.0, 20.0, self.view.bounds.size.width, self.view.bounds.size.height-20.0), style: UITableViewStyle.Plain)
         tableView.delegate = self
@@ -49,11 +33,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     //MARK:- UITableView
     
     internal func numberOfSectionsInTableView(tableView: UITableView) -> Int{
-        return 1
+        return filters.count
     }
     
     internal func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filters.count
+        return filters[section].count
     }
     
     internal func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -63,7 +47,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     internal func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let identifier = "cellIdentifier"
         let cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: identifier)
-        cell.textLabel?.text = filters[indexPath.row].getCIFilterName()
+        cell.textLabel?.text = filters[indexPath.section][indexPath.row].rawValue
         return cell
     }
     
@@ -71,9 +55,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let vc = FilterDemonstationViewController()
         let nc = UINavigationController(rootViewController: vc)
         self.presentViewController(nc, animated: true) { () -> Void in
-            vc.setFiltertype(self.filters[indexPath.row])
+            vc.setFiltertype(self.filters[indexPath.section][indexPath.row])
         }
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
+    
+    internal func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return categories[section]
     }
 }
 

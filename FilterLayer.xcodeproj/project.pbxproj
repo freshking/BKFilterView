@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		401EEF0E1C8DA0D1008BA58B /* BKFilterList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401EEF0D1C8DA0D1008BA58B /* BKFilterList.swift */; };
 		402E09B31C8CE4DB00D797F5 /* BKFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402E09B11C8CE4DB00D797F5 /* BKFilter.swift */; };
 		402E09B41C8CE4DB00D797F5 /* BKFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402E09B21C8CE4DB00D797F5 /* BKFilterView.swift */; };
 		402E09B81C8CEDD500D797F5 /* FilterDemonstationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402E09B71C8CEDD500D797F5 /* FilterDemonstationViewController.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		401EEF0D1C8DA0D1008BA58B /* BKFilterList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKFilterList.swift; sourceTree = "<group>"; };
 		402E09B11C8CE4DB00D797F5 /* BKFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKFilter.swift; sourceTree = "<group>"; };
 		402E09B21C8CE4DB00D797F5 /* BKFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKFilterView.swift; sourceTree = "<group>"; };
 		402E09B71C8CEDD500D797F5 /* FilterDemonstationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterDemonstationViewController.swift; sourceTree = "<group>"; };
@@ -45,6 +47,7 @@
 			isa = PBXGroup;
 			children = (
 				402E09B11C8CE4DB00D797F5 /* BKFilter.swift */,
+				401EEF0D1C8DA0D1008BA58B /* BKFilterList.swift */,
 				402E09B21C8CE4DB00D797F5 /* BKFilterView.swift */,
 			);
 			path = BKFilter;
@@ -152,6 +155,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				401EEF0E1C8DA0D1008BA58B /* BKFilterList.swift in Sources */,
 				402E09B31C8CE4DB00D797F5 /* BKFilter.swift in Sources */,
 				402E09B81C8CEDD500D797F5 /* FilterDemonstationViewController.swift in Sources */,
 				4035ED1E1C8C9E0B00D04698 /* ViewController.swift in Sources */,
