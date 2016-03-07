@@ -47,21 +47,21 @@ class BKFilterView: UIView {
     override func drawRect(rect: CGRect) {
         super.drawRect(rect)
         if let layer = UIApplication.sharedApplication().delegate?.window??.layer ?? UIApplication.sharedApplication().keyWindow?.layer {
+            let scale = UIScreen.mainScreen().scale
             
             // make self invisible
             self.alpha = 0.0
             
             // full window screenshot
-            UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, UIScreen.mainScreen().scale)
-            // TODO: check neccessity (seems to impact performance): drawViewHierarchyInRect(self.bounds, afterScreenUpdates: true)
+            UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, scale)
+            // TODO: check neccessity of (seems to impact performance): drawViewHierarchyInRect(self.bounds, afterScreenUpdates: true)
             layer.renderInContext(UIGraphicsGetCurrentContext()!)
             let screenshot = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
             
             // crop screenshot
-            UIGraphicsBeginImageContext(self.bounds.size)
+            UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, scale)
             screenshot.drawAtPoint(CGPoint(x: -self.frame.origin.x, y: -self.frame.origin.y))
-            // TODO: croppedImage seems to be slightly blurry. fix this
             let croppedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
             
