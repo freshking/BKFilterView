@@ -18,14 +18,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         self.view.backgroundColor = UIColor.whiteColor()
         
         let collection: [String: [BKFilterType]] = BKFilterType.collection
-        categories = Array(collection.keys)
-        filters = Array(collection.values)
+        categories = Array(collection.keys).reverse()
+        filters = Array(collection.values).reverse()
         
         let tableView = UITableView(frame: CGRectMake(0.0, 20.0, self.view.bounds.size.width, self.view.bounds.size.height-20.0), style: UITableViewStyle.Plain)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.autoresizingMask = [UIViewAutoresizing.FlexibleHeight, .FlexibleWidth]
-        tableView.separatorColor = UIColor.clearColor()
         tableView.backgroundColor = UIColor.clearColor()
         self.view.addSubview(tableView)
     }

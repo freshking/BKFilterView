@@ -16,8 +16,9 @@ enum BKFilterType: String {
         "Color Effect": colorEffecFilters,
         "Distortion Effect": distortionEffectFilters,
         "Halfton eEffect": halftoneEffectFilters,
-        "Tile Effect": tileEffectFilters]
-    
+        "Tile Effect": tileEffectFilters,
+        "Stylize": stylizeFilters]
+        
     //MARK:- CICategoryColorEffect
     
     case ColorCrossPolynomial = "CIColorCrossPolynomial"
@@ -114,11 +115,47 @@ enum BKFilterType: String {
         DotScreen,
         HatchedScreen,
         LineScreen]
-
-    
-    //MARK:- CICategoryStylize
     
     //MARK:- CICategoryTileEffect
+
+    //TODO: Some distorion effets require additional input to th CIFilter. Implement this.
+    
+    case AffineClamp = "CIAffineClamp"
+    case AffineTile = "CIAffineTile"
+    case EightfoldReflectedTile = "CIEightfoldReflectedTile"
+    case FourfoldReflectedTile = "CIFourfoldReflectedTile"
+    case FourfoldRotatedTile = "CIFourfoldRotatedTile"
+    case FourfoldTranslatedTile = "CIFourfoldTranslatedTile"
+    case GlideReflectedTile = "CIGlideReflectedTile"
+    case Kaleidoscope = "CIKaleidoscope"
+    case OpTile = "CIOpTile"
+    case ParallelogramTile = "CIParallelogramTile"
+    case PerspectiveTile = "CIPerspectiveTile"
+    case SixfoldReflectedTile = "CISixfoldReflectedTile"
+    case SixfoldRotatedTile = "CISixfoldRotatedTile"
+    case TriangleKaleidoscope = "CITriangleKaleidoscope"
+    case TriangleTile = "CITriangleTile"
+    case TwelvefoldReflectedTile = "CITwelvefoldReflectedTile"
+    
+    static private let tileEffectFilters: [BKFilterType] = [
+        AffineClamp,
+        AffineTile,
+        EightfoldReflectedTile,
+        FourfoldReflectedTile,
+        FourfoldRotatedTile,
+        FourfoldTranslatedTile,
+        GlideReflectedTile,
+        Kaleidoscope,
+        OpTile,
+        ParallelogramTile,
+        PerspectiveTile,
+        SixfoldReflectedTile,
+        SixfoldRotatedTile,
+        TriangleKaleidoscope,
+        TriangleTile,
+        TwelvefoldReflectedTile]
+    
+    //MARK:- CICategoryStylize
     
     //TODO: Some distorion effets require additional input to th CIFilter. Implement this.
 
@@ -146,7 +183,7 @@ enum BKFilterType: String {
     case SpotColor = "CISpotColor"
     case SpotLight = "CISpotLight"
 
-    static private let tileEffectFilters: [BKFilterType] = [
+    static private let stylizeFilters: [BKFilterType] = [
         BlendWithAlphaMask,
         BlendWithMask,
         Bloom,

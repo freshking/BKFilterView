@@ -11,7 +11,7 @@ import UIKit
 class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
     
     private var filterType: BKFilterType = BKFilterType.PhotoEffectMono
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -58,7 +58,21 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
     //MARK:- BKFilterViewDelegate
     
     internal func manipulateFilterContext(inout context: CGContext, rect: CGRect) {
-        BKFilter.setType(&context, rect: rect, type: filterType)
+        
+        var filterValues = [String: AnyObject?]()
+        let centerVector = CIVector(x: rect.size.width*1.5, y: rect.size.height*1.5)
+        
+        if filterType == .CircularScreen {
+            filterValues["inputCenter"] = centerVector
+            filterValues["inputWidth"] = NSNumber(float: 8.0) // default 6.0
+            filterValues["inputSharpness"] = NSNumber(float: 0.8) // default 0.70
+        } else if filterType == .BumpDistortion {
+            filterValues["inputCenter"] = centerVector
+            filterValues["inputRadius"] = NSNumber(float: Float(min(rect.size.width, rect.size.height))) // default 300.00
+            filterValues["inputScale"] = NSNumber(float: 1.0) // default 0.50
+        }
+        
+        BKFilter.setType(&context, rect: rect, type: filterType, filerValues: filterValues)
     }
     
     //MARK:- Private functions

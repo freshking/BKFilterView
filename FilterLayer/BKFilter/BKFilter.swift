@@ -12,19 +12,31 @@ class BKFilter {
     
     //MARK:- Base filter
     
-    class func setType(inout context: CGContext, rect: CGRect, type: BKFilterType)
+    class func setType(inout context: CGContext, rect: CGRect, type: BKFilterType, filerValues: [String: AnyObject?]?)
     {
         let originalImage: CGImageRef = CGBitmapContextCreateImage(context)!
         let ciImage: CIImage = CIImage(CGImage: originalImage)
         let filterName = type.rawValue
-        if let filter = CIFilter(name: filterName) {
+        if var filter = CIFilter(name: filterName) {
             filter.setDefaults()
             filter.setValue(ciImage, forKey: kCIInputImageKey)
+            self.setFilterValues(&filter, filerValues: filerValues)
             if let outputImage = filter.outputImage {
                 let outputImage: UIImage = UIImage(CIImage: outputImage)
                 outputImage.drawInRect(rect)
             } else {
                 print("Error rendering filter: \(filterName)")
+            }
+        }
+    }
+    
+    private class func setFilterValues(inout filter: CIFilter, filerValues: [String: AnyObject?]?)
+    {
+        if let filerValues = filerValues {
+            for filterValue in filerValues {
+                let key: String = filterValue.0
+                let value: AnyObject? = filterValue.1
+                filter.setValue(value, forKey: key)
             }
         }
     }
