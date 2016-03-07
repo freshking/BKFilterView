@@ -46,27 +46,25 @@ class BKFilterView: UIView {
 
     override func drawRect(rect: CGRect) {
         super.drawRect(rect)
+        
         if let layer = UIApplication.sharedApplication().delegate?.window??.layer ?? UIApplication.sharedApplication().keyWindow?.layer {
             let scale = UIScreen.mainScreen().scale
             
-            // make self invisible
+            // make self invisible (so that we don't make a screenshot of it)
             self.alpha = 0.0
             
-            // full window screenshot
-            UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, scale)
-            // TODO: check neccessity of (seems to impact performance): drawViewHierarchyInRect(self.bounds, afterScreenUpdates: true)
-            layer.renderInContext(UIGraphicsGetCurrentContext()!)
-            let screenshot = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            
-            // crop screenshot
+            // get partial screenshow
+            var screenshot: UIImage?
             UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, scale)
-            screenshot.drawAtPoint(CGPoint(x: -self.frame.origin.x, y: -self.frame.origin.y))
-            let croppedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+            if let imageContext = UIGraphicsGetCurrentContext() {
+                CGContextTranslateCTM(imageContext, -self.frame.origin.x, -self.frame.origin.y)
+                layer.renderInContext(imageContext)
+                screenshot = UIGraphicsGetImageFromCurrentImageContext()
+            }
             UIGraphicsEndImageContext()
             
             // draw cropped screenshot
-            croppedImage.drawInRect(rect)
+            screenshot?.drawInRect(rect)
             
             // manipulate context
             var context = UIGraphicsGetCurrentContext()!
