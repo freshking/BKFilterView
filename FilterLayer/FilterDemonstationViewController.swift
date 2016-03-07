@@ -44,6 +44,8 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
         
         let a: CGFloat = 150.0
         let filterView = BKFilterView(frame: CGRectMake((self.view.bounds.size.width-a)/2.0, (self.view.bounds.size.height-a)/2.0, a, a))
+        filterView.layer.borderWidth = 1.0
+        filterView.layer.borderColor = UIColor.blackColor().CGColor
         filterView.delegate = self
         filterView.autoresizingMask = [UIViewAutoresizing.FlexibleWidth, .FlexibleHeight]
         self.view.addSubview(filterView)

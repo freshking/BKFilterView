@@ -25,8 +25,6 @@ class BKFilterView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = UIColor.greenColor()
-        self.layer.borderWidth = 1.0
-        self.layer.borderColor = UIColor.blackColor().CGColor
         // this is used to detect movement of the view and rerender drawRect
         self.addObserver(self, forKeyPath: "center", options: NSKeyValueObservingOptions.New, context: nil)
     }
