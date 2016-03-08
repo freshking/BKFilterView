@@ -35,6 +35,7 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
         self.generateBackground()
     }
 
+
     //MARK:- Control functions
     
     internal func setFiltertype(type: BKFilterType) {
@@ -53,6 +54,10 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
         let gesture = UIPanGestureRecognizer(target: self, action: Selector("viewDragged:"))
         gesture.cancelsTouchesInView = false
         filterView.addGestureRecognizer(gesture)
+        
+        filterView.revealCircular { () -> Void in
+            
+        }
     }
     
     //MARK:- BKFilterViewDelegate

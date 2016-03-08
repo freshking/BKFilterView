@@ -18,6 +18,7 @@ protocol BKFilterViewDelegate: class {
 class BKFilterView: UIView {
     
     private var presetExcludedViews: [UIView]?
+    
     weak var delegate: BKFilterViewDelegate?
     
     //MARK:- Override methods
@@ -53,7 +54,7 @@ class BKFilterView: UIView {
         
         if let layer = UIApplication.sharedApplication().delegate?.window??.layer ?? UIApplication.sharedApplication().keyWindow?.layer {
             let scale = UIScreen.mainScreen().scale
-        
+            
             // get views that should be excluded from the screenshot
             var excludedViews: [UIView]? = delegate?.exculdedViews()
             if (excludedViews != nil && presetExcludedViews != nil) {
@@ -65,7 +66,7 @@ class BKFilterView: UIView {
             // make views invisible (so that we don't make a screenshot of it)
             self.setAlphaForViews(excludedViews, alpha: 0.0)
             
-            // get partial screenshow
+            // get partial screenshot
             var screenshot: UIImage?
             UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, scale)
             if let imageContext = UIGraphicsGetCurrentContext() {
@@ -78,10 +79,12 @@ class BKFilterView: UIView {
             // draw cropped screenshot
             screenshot?.drawInRect(rect)
             
-            // manipulate context
+            // get current context
             var context = UIGraphicsGetCurrentContext()!
-            delegate?.manipulateFilterContext(&context, rect: rect)
             
+            // manipulate context
+            delegate?.manipulateFilterContext(&context, rect: rect)
+
             // make views visible again
             self.setAlphaForViews(excludedViews, alpha: 1.0)
         }
@@ -92,6 +95,83 @@ class BKFilterView: UIView {
     internal func setExcludedViews(views: [UIView]?)
     {
         presetExcludedViews = views
+    }
+    
+    internal func revealCircular(completion: (() -> Void)?)
+    {
+        self.userInteractionEnabled = false
+        
+        let maskLayerRadius = CGFloat(hypotf(Float(self.bounds.size.width), Float(self.bounds.size.height))) / 2.0
+        let maskLayerEdgeLength: CGFloat = (maskLayerRadius * 2.0)
+        let maskLayerBounds: CGRect = CGRectMake(0.0, 0.0, maskLayerEdgeLength, maskLayerEdgeLength)
+        let maskLayerPosition: CGPoint = CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height/2.0)
+        
+        let maskLayer = CAShapeLayer()
+        maskLayer.bounds = CGRectMake((self.bounds.size.width-1.0)/2.0, (self.bounds.size.height-1.0)/2.0, 1.0, 1.0)
+        maskLayer.path = UIBezierPath(roundedRect: maskLayer.bounds, cornerRadius: maskLayer.bounds.size.width/2.0).CGPath
+        maskLayer.position = maskLayerPosition
+        maskLayer.anchorPoint = CGPointMake(0.5, 0.5)
+        self.layer.mask = maskLayer
+        
+        let pathAnimation: CABasicAnimation = CABasicAnimation(keyPath: "path")
+        pathAnimation.toValue = UIBezierPath(roundedRect: maskLayerBounds, cornerRadius: maskLayerRadius).CGPath
+        
+        let boundsAnimation: CABasicAnimation = CABasicAnimation(keyPath: "bounds")
+        boundsAnimation.toValue = NSValue(CGRect: maskLayerBounds)
+
+        let animationGroup: CAAnimationGroup = CAAnimationGroup()
+        animationGroup.animations = [pathAnimation, boundsAnimation]
+        animationGroup.removedOnCompletion = false
+        animationGroup.duration = 0.6
+        animationGroup.fillMode  = kCAFillModeForwards
+
+        CATransaction.begin()
+        CATransaction.setCompletionBlock({ () -> Void in
+            maskLayer.removeFromSuperlayer()
+            self.userInteractionEnabled = true
+            completion?()
+        })
+        maskLayer.addAnimation(animationGroup, forKey: "animationGroup")
+        CATransaction.commit()
+    }
+    
+    internal func hideCircular(completion: (() -> Void)?)
+    {
+        self.userInteractionEnabled = false
+        
+        let maskLayerRadius: CGFloat = 1.0
+        let maskLayerEdgeLength: CGFloat = (maskLayerRadius * 2.0)
+        let maskLayerBounds: CGRect = CGRectMake((self.bounds.size.width-maskLayerEdgeLength)/2.0, (self.bounds.size.height-maskLayerEdgeLength)/2.0, maskLayerEdgeLength, maskLayerEdgeLength)
+        let maskLayerPosition: CGPoint = CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height/2.0)
+        let fromRadius: CGFloat = CGFloat(hypotf(Float(self.bounds.size.width), Float(self.bounds.size.height))) / 2.0
+        
+        let maskLayer = CAShapeLayer()
+        maskLayer.bounds = CGRectMake(0.0, 0.0, (2 * fromRadius), (2 * fromRadius))
+        maskLayer.path = UIBezierPath(roundedRect: maskLayer.bounds, cornerRadius: fromRadius).CGPath
+        maskLayer.position = maskLayerPosition
+        maskLayer.anchorPoint = CGPointMake(0.5, 0.5)
+        self.layer.mask = maskLayer
+        
+        let pathAnimation: CABasicAnimation = CABasicAnimation(keyPath: "path")
+        pathAnimation.toValue = UIBezierPath(roundedRect: maskLayerBounds, cornerRadius: maskLayerRadius).CGPath
+        
+        let boundsAnimation: CABasicAnimation = CABasicAnimation(keyPath: "bounds")
+        boundsAnimation.toValue = NSValue(CGRect: maskLayerBounds)
+        
+        let animationGroup: CAAnimationGroup = CAAnimationGroup()
+        animationGroup.animations = [pathAnimation, boundsAnimation]
+        animationGroup.removedOnCompletion = false
+        animationGroup.duration = 0.6
+        animationGroup.fillMode  = kCAFillModeForwards
+        
+        CATransaction.begin()
+        CATransaction.setCompletionBlock({ () -> Void in
+            maskLayer.removeFromSuperlayer()
+            self.userInteractionEnabled = true
+            completion?()
+        })
+        maskLayer.addAnimation(animationGroup, forKey: "animationGroup")
+        CATransaction.commit()
     }
     
     //MARK:- Private methods
