@@ -17,7 +17,10 @@ protocol BKFilterViewDelegate: class {
 
 class BKFilterView: UIView {
     
+    private var presetExcludedViews: [UIView]?
     weak var delegate: BKFilterViewDelegate?
+    
+    //MARK:- Override methods
     
     deinit {
         self.removeObserver(self, forKeyPath: "center")
@@ -52,7 +55,12 @@ class BKFilterView: UIView {
             let scale = UIScreen.mainScreen().scale
         
             // get views that should be excluded from the screenshot
-            let excludedViews: [UIView]? = delegate?.exculdedViews()
+            var excludedViews: [UIView]? = delegate?.exculdedViews()
+            if (excludedViews != nil && presetExcludedViews != nil) {
+                for view in presetExcludedViews! {
+                    excludedViews!.append(view)
+                }
+            }
             
             // make views invisible (so that we don't make a screenshot of it)
             self.setAlphaForViews(excludedViews, alpha: 0.0)
@@ -77,6 +85,13 @@ class BKFilterView: UIView {
             // make views visible again
             self.setAlphaForViews(excludedViews, alpha: 1.0)
         }
+    }
+    
+    //MARK:- Control methods
+    
+    internal func setExcludedViews(views: [UIView]?)
+    {
+        presetExcludedViews = views
     }
     
     //MARK:- Private methods
