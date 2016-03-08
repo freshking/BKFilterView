@@ -57,7 +57,10 @@ class BKFilterView: UIView {
             
             // get views that should be excluded from the screenshot
             var excludedViews: [UIView]? = delegate?.exculdedViews()
-            if (excludedViews != nil && presetExcludedViews != nil) {
+            if presetExcludedViews != nil {
+                if excludedViews == nil {
+                    excludedViews = [UIView]()
+                }
                 for view in presetExcludedViews! {
                     excludedViews!.append(view)
                 }
@@ -122,7 +125,7 @@ class BKFilterView: UIView {
         let animationGroup: CAAnimationGroup = CAAnimationGroup()
         animationGroup.animations = [pathAnimation, boundsAnimation]
         animationGroup.removedOnCompletion = false
-        animationGroup.duration = 0.6
+        animationGroup.duration = 0.3
         animationGroup.fillMode  = kCAFillModeForwards
 
         CATransaction.begin()
@@ -161,7 +164,7 @@ class BKFilterView: UIView {
         let animationGroup: CAAnimationGroup = CAAnimationGroup()
         animationGroup.animations = [pathAnimation, boundsAnimation]
         animationGroup.removedOnCompletion = false
-        animationGroup.duration = 0.6
+        animationGroup.duration = 0.3
         animationGroup.fillMode  = kCAFillModeForwards
         
         CATransaction.begin()

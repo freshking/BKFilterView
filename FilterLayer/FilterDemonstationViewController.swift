@@ -78,7 +78,7 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
             filterValues["inputSharpness"] = NSNumber(float: 0.8) // default 0.70
         } else if filterType == .BumpDistortion {
             filterValues["inputCenter"] = centerVector
-            filterValues["inputRadius"] = NSNumber(float: Float(min(rect.size.width, rect.size.height))) // default 300.00
+            filterValues["inputRadius"] = NSNumber(float: Float(max(rect.size.width, rect.size.height))) // default 300.00
             filterValues["inputScale"] = NSNumber(float: 1.0) // default 0.50
         }
         
