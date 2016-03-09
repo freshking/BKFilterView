@@ -18,9 +18,8 @@ enum BKFilterType: String {
         "Halfton eEffect": halftoneEffectFilters,
         "Tile Effect": tileEffectFilters,
         "Stylize": stylizeFilters]
-        
-    //MARK:- CICategoryColorEffect
     
+    case ColorControls = "CIColorControls"
     case ColorCrossPolynomial = "CIColorCrossPolynomial"
     case ColorCube = "CIColorCube"
     case ColorCubeWithColorSpace = "CIColorCubeWithColorSpace"
@@ -44,6 +43,7 @@ enum BKFilterType: String {
     case Vignette = "CIVignette"
     
     static private let colorEffecFilters: [BKFilterType] = [
+        ColorControls,
         ColorCrossPolynomial,
         ColorCube,
         ColorCubeWithColorSpace,

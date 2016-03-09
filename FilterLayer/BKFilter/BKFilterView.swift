@@ -18,10 +18,9 @@ protocol BKFilterViewDelegate: class {
 class BKFilterView: UIView {
     
     private var presetExcludedViews: [UIView]?
-    
     weak var delegate: BKFilterViewDelegate?
     
-    //MARK:- Override methods
+    //MARK:- Override functions
     
     deinit {
         self.removeObserver(self, forKeyPath: "center")
@@ -30,6 +29,7 @@ class BKFilterView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = UIColor.greenColor()
+        self.autoresizingMask = [UIViewAutoresizing.FlexibleHeight, .FlexibleWidth]
         // this is used to detect movement of the view and rerender drawRect
         self.addObserver(self, forKeyPath: "center", options: NSKeyValueObservingOptions.New, context: nil)
     }
@@ -51,8 +51,10 @@ class BKFilterView: UIView {
 
     override func drawRect(rect: CGRect) {
         super.drawRect(rect)
-        
-        if let layer = UIApplication.sharedApplication().delegate?.window??.layer ?? UIApplication.sharedApplication().keyWindow?.layer {
+
+        if let viewToRender = BKFilterView.insertionView() {
+            
+            // screen scale
             let scale = UIScreen.mainScreen().scale
             
             // get views that should be excluded from the screenshot
@@ -72,11 +74,21 @@ class BKFilterView: UIView {
             // get partial screenshot
             var screenshot: UIImage?
             UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, scale)
-            if let imageContext = UIGraphicsGetCurrentContext() {
-                CGContextTranslateCTM(imageContext, -self.frame.origin.x, -self.frame.origin.y)
-                layer.renderInContext(imageContext)
-                screenshot = UIGraphicsGetImageFromCurrentImageContext()
+            if (true) {
+                if let imageContext = UIGraphicsGetCurrentContext() {
+                    CGContextTranslateCTM(imageContext, -self.frame.origin.x, -self.frame.origin.y)
+                    viewToRender.layer.renderInContext(imageContext)
+                    screenshot = UIGraphicsGetImageFromCurrentImageContext()
+                }
+            } else {
+                // the commented out code below is actually a lot faster in rendering (10 - 15 times) the view
+                // to the context but it interferes with any other ongoing animations. they get flushed out.
+                // see http://stackoverflow.com/a/25704861/1856463
+                // but if you are sure that you will never have this problem then feel free to use the code below and comment out the one above.
+                // let renderFrame = CGRectMake(-self.frame.origin.x, -self.frame.origin.y, viewToRender.bounds.size.width, viewToRender.bounds.size.height)
+                // viewToRender.drawViewHierarchyInRect(renderFrame, afterScreenUpdates: true)
             }
+            screenshot = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
             
             // draw cropped screenshot
@@ -92,15 +104,15 @@ class BKFilterView: UIView {
             self.setAlphaForViews(excludedViews, alpha: 1.0)
         }
     }
-    
-    //MARK:- Control methods
+
+    //MARK:- Control functions
     
     internal func setExcludedViews(views: [UIView]?)
     {
         presetExcludedViews = views
     }
     
-    internal func revealCircular(completion: (() -> Void)?)
+    internal func revealCircular(duration: CFTimeInterval = 0.3, completion: (() -> Void)?)
     {
         self.userInteractionEnabled = false
         
@@ -125,7 +137,7 @@ class BKFilterView: UIView {
         let animationGroup: CAAnimationGroup = CAAnimationGroup()
         animationGroup.animations = [pathAnimation, boundsAnimation]
         animationGroup.removedOnCompletion = false
-        animationGroup.duration = 0.3
+        animationGroup.duration = duration
         animationGroup.fillMode  = kCAFillModeForwards
 
         CATransaction.begin()
@@ -138,7 +150,7 @@ class BKFilterView: UIView {
         CATransaction.commit()
     }
     
-    internal func hideCircular(completion: (() -> Void)?)
+    internal func hideCircular(duration: CFTimeInterval = 0.3, completion: (() -> Void)?)
     {
         self.userInteractionEnabled = false
         
@@ -177,15 +189,39 @@ class BKFilterView: UIView {
         CATransaction.commit()
     }
     
-    //MARK:- Private methods
+    //MARK:- Private functions
     
-    private func setAlphaForViews(views: [UIView]?, alpha: CGFloat)
-    {
+    private func setAlphaForViews(views: [UIView]?, alpha: CGFloat) {
         self.alpha = alpha
         if views != nil && views!.count > 0 {
             for view in views! {
                 view.alpha = alpha
             }
         }
+    }
+    
+    //MARK:- Class functions
+    
+    class func insertionView() -> UIView? {
+        // this is the insertion view which will be screenshottet. this should be used as refrence view
+        return UIApplication.topViewController()?.view
+    }
+}
+
+//MARK:- UIApplication extension
+extension UIApplication {
+    class func topViewController(base: UIViewController? = (UIApplication.sharedApplication().delegate as! AppDelegate).window?.rootViewController) -> UIViewController? {
+        if let nav = base as? UINavigationController {
+            return topViewController(nav.visibleViewController)
+        }
+        if let tab = base as? UITabBarController {
+            if let selected = tab.selectedViewController {
+                return topViewController(selected)
+            }
+        }
+        if let presented = base?.presentedViewController {
+            return topViewController(presented)
+        }
+        return base
     }
 }

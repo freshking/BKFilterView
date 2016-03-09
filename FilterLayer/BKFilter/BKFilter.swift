@@ -42,6 +42,25 @@ class BKFilter {
     }
     
     //MARK:- Examples of custom filters
+    
+    class func blackAndWhite(inout context: CGContext, rect: CGRect) {
+        let originalImage: CGImageRef = CGBitmapContextCreateImage(context)!
+        let ciImage: CIImage = CIImage(CGImage: originalImage)
+        let bwFilter = CIFilter(name: "CIColorControls")!
+        bwFilter.setValue(ciImage, forKey: kCIInputImageKey)
+        bwFilter.setValue(NSNumber(float: 0.0), forKey: kCIInputBrightnessKey)
+        bwFilter.setValue(NSNumber(float: 1.1), forKey: kCIInputContrastKey)
+        bwFilter.setValue(NSNumber(float: 0.0), forKey: kCIInputSaturationKey)
+        if let bwFilterOutput = bwFilter.outputImage {
+            let exposureFilter = CIFilter(name: "CIExposureAdjust")!
+            exposureFilter.setValue(bwFilterOutput, forKey: kCIInputImageKey)
+            exposureFilter.setValue(NSNumber(float: 0.7), forKey: kCIInputEVKey)
+            if let outputImage = exposureFilter.outputImage {
+                let outputImage: UIImage = UIImage(CIImage: outputImage)
+                outputImage.drawInRect(rect)
+            }
+        }
+    }
 
     class func setYellow(inout context: CGContext, rect: CGRect) {
         let color = UIColor(red: 0.5, green: 0.5, blue: 0.0, alpha: 0.4).CGColor
