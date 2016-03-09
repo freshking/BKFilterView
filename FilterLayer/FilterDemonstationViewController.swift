@@ -35,6 +35,23 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
         self.generateBackground()
     }
 
+    override func willAnimateRotationToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
+        var filterView: BKFilterView?
+        for view in self.view.subviews {
+            if let tileView = view as? BackgroundTileView {
+                tileView.removeFromSuperview()
+            } else if let view = view as? BKFilterView {
+                filterView = view
+                
+            }
+        }
+        self.generateBackground()
+        
+        if let filterView = filterView {
+            filterView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds))
+            self.view.bringSubviewToFront(filterView)
+        }
+    }
 
     //MARK:- Control functions
     
@@ -48,7 +65,7 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
         filterView.layer.borderWidth = 1.0
         filterView.layer.borderColor = UIColor.blackColor().CGColor
         filterView.delegate = self
-        filterView.autoresizingMask = [UIViewAutoresizing.FlexibleWidth, .FlexibleHeight]
+        filterView.autoresizingMask = [UIViewAutoresizing.FlexibleLeftMargin, .FlexibleRightMargin, .FlexibleTopMargin ,.FlexibleBottomMargin]
         self.view.addSubview(filterView)
         
         let gesture = UIPanGestureRecognizer(target: self, action: Selector("viewDragged:"))
@@ -80,7 +97,13 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
             filterValues["inputCenter"] = centerVector
             filterValues["inputRadius"] = NSNumber(float: Float(max(rect.size.width, rect.size.height))) // default 300.00
             filterValues["inputScale"] = NSNumber(float: 1.0) // default 0.50
+        } else if filterType == .ColorControls {
+            
+            BKFilter.blackAndWhite(&context, rect: rect)
+            return
         }
+        
+        
         
         BKFilter.filter(&context, rect: rect, type: filterType, filerValues: filterValues)
     }
@@ -98,19 +121,21 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
     private func generateBackground()
     {
         let factor: CGFloat = (self.view.bounds.size.height/self.view.bounds.size.width)
-        let width: CGFloat = (self.view.bounds.size.width / 12.0)
-        let height: CGFloat = width * factor
+        var width: CGFloat = (self.view.bounds.size.width / 12.0)
+        var height: CGFloat = width * factor
+        
+        let orientation = UIApplication.sharedApplication().statusBarOrientation
+        if UIInterfaceOrientationIsLandscape(orientation) {
+            swap(&width, &height)
+        }
         
         var viewCount: Int = Int(width) * Int(height)
         var x: CGFloat = 0.0
         var y: CGFloat = 0.0
         
         while viewCount > 0 {
-            let view = UIView(frame: CGRectMake(x, y, width, height))
-            view.backgroundColor = self.randomColor()
-            view.layer.borderColor = UIColor.whiteColor().CGColor
-            view.layer.borderWidth = 1.0
-            self.view.addSubview(view)
+            let tileView = BackgroundTileView(frame: CGRectMake(x, y, width, height))
+            self.view.addSubview(tileView)
             x += width
             if (x > self.view.bounds.size.width) {
                 x = 0.0
@@ -120,18 +145,32 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
         }
     }
     
-    private func randomColor() -> UIColor {
-        let randomRed:CGFloat = CGFloat(drand48())
-        let randomGreen:CGFloat = CGFloat(drand48())
-        let randomBlue:CGFloat = CGFloat(drand48())
-        return UIColor(red: randomRed, green: randomGreen, blue: randomBlue, alpha: 1.0)
-    }
-    
     //MARK:- Button actions
     
     internal func leftMenuButtonAction(button: UIButton)
     {
         self.navigationController?.dismissViewControllerAnimated(true, completion: { () -> Void in
         })
+    }
+}
+
+class BackgroundTileView: UIView {
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.backgroundColor = self.randomColor()
+        self.layer.borderColor = UIColor.whiteColor().CGColor
+        self.layer.borderWidth = 1.0
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func randomColor() -> UIColor {
+        let randomRed:CGFloat = CGFloat(drand48())
+        let randomGreen:CGFloat = CGFloat(drand48())
+        let randomBlue:CGFloat = CGFloat(drand48())
+        return UIColor(red: randomRed, green: randomGreen, blue: randomBlue, alpha: 1.0)
     }
 }
