@@ -8,58 +8,58 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {    
-
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
     private var categories: [String]!
     private var filters: [[BKFilterType]]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIColor.white
         
         let collection: [String: [BKFilterType]] = BKFilterType.collection
-        categories = Array(collection.keys).reverse()
-        filters = Array(collection.values).reverse()
+        categories = Array(collection.keys).reversed()
+        filters = Array(collection.values).reversed()
         
-        let tableView = UITableView(frame: CGRectMake(0.0, 20.0, self.view.bounds.size.width, self.view.bounds.size.height-20.0), style: UITableViewStyle.Plain)
+        let tableView = UITableView(frame: CGRect(x: 0, y: 20, width: self.view.bounds.size.width, height: self.view.bounds.size.height-20.0), style: UITableViewStyle.plain)
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.autoresizingMask = [UIViewAutoresizing.FlexibleHeight, .FlexibleWidth]
-        tableView.backgroundColor = UIColor.clearColor()
+        tableView.autoresizingMask = [UIViewAutoresizing.flexibleHeight, .flexibleWidth]
+        tableView.backgroundColor = UIColor.clear
         self.view.addSubview(tableView)
     }
-
+    
     //MARK:- UITableView
     
-    internal func numberOfSectionsInTableView(tableView: UITableView) -> Int{
+    func numberOfSections(in tableView: UITableView) -> Int {
         return filters.count
     }
     
-    internal func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filters[section].count
     }
     
-    internal func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    internal func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 45.0
     }
     
-    internal func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "cellIdentifier"
-        let cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: identifier)
+        let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: identifier)
         cell.textLabel?.text = filters[indexPath.section][indexPath.row].rawValue
         return cell
     }
     
-    internal func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = FilterDemonstationViewController()
         let nc = UINavigationController(rootViewController: vc)
-        self.presentViewController(nc, animated: true) { () -> Void in
-            vc.setFiltertype(self.filters[indexPath.section][indexPath.row])
+        self.present(nc, animated: true) { () -> Void in
+            vc.setFiltertype(type: self.filters[indexPath.section][indexPath.row])
         }
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        tableView.deselectRow(at: indexPath as IndexPath, animated: true)
     }
     
-    internal func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return categories[section]
     }
 }
