@@ -31,26 +31,26 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     //MARK:- UITableView
     
-    internal func numberOfSectionsInTableView(tableView: UITableView) -> Int{
+    func numberOfSections(in tableView: UITableView) -> Int {
         return filters.count
     }
     
-    internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filters[section].count
     }
     
-    internal func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 45.0
     }
     
-    internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "cellIdentifier"
         let cell = UITableViewCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: identifier)
         cell.textLabel?.text = filters[indexPath.section][indexPath.row].rawValue
         return cell
     }
     
-    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = FilterDemonstationViewController()
         let nc = UINavigationController(rootViewController: vc)
         self.present(nc, animated: true) { () -> Void in
