@@ -12,7 +12,7 @@ import UIKit
 
 protocol BKFilterViewDelegate: class {
     func exculdedViews() -> [UIView]?
-    func manipulateFilterContext(inout context: CGContext, rect: CGRect)
+    func manipulateFilterContext( context: inout CGContext, rect: CGRect)
 }
 
 class BKFilterView: UIView {
@@ -28,34 +28,33 @@ class BKFilterView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = UIColor.greenColor()
-        self.autoresizingMask = [UIViewAutoresizing.FlexibleHeight, .FlexibleWidth]
+        self.backgroundColor = UIColor.green
+        self.autoresizingMask = [UIView.AutoresizingMask.flexibleHeight, .flexibleWidth]
         // this is used to detect movement of the view and rerender drawRect
-        self.addObserver(self, forKeyPath: "center", options: NSKeyValueObservingOptions.New, context: nil)
+        self.addObserver(self, forKeyPath: "center", options: NSKeyValueObservingOptions.new, context: nil)
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         self.setNeedsDisplay()
     }
-    
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "center" {
             self.setNeedsDisplay()
         }
     }
-
-    override func drawRect(rect: CGRect) {
-        super.drawRect(rect)
-
+    
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        
         if let viewToRender = BKFilterView.insertionView() {
             
             // screen scale
-            let scale = UIScreen.mainScreen().scale
+            let scale = UIScreen.main.scale
             
             // get views that should be excluded from the screenshot
             var excludedViews: [UIView]? = delegate?.exculdedViews()
@@ -69,15 +68,15 @@ class BKFilterView: UIView {
             }
             
             // make views invisible (so that we don't make a screenshot of it)
-            self.setAlphaForViews(excludedViews, alpha: 0.0)
+            self.setAlphaForViews(views: excludedViews, alpha: 0.0)
             
             // get partial screenshot
             var screenshot: UIImage?
             UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, scale)
             if (true) {
                 if let imageContext = UIGraphicsGetCurrentContext() {
-                    CGContextTranslateCTM(imageContext, -self.frame.origin.x, -self.frame.origin.y)
-                    viewToRender.layer.renderInContext(imageContext)
+                    imageContext.translateBy(x: -self.frame.origin.x, y: -self.frame.origin.y)
+                    viewToRender.layer.render(in: imageContext)
                     screenshot = UIGraphicsGetImageFromCurrentImageContext()
                 }
             } else {
@@ -92,19 +91,19 @@ class BKFilterView: UIView {
             UIGraphicsEndImageContext()
             
             // draw cropped screenshot
-            screenshot?.drawInRect(rect)
+            screenshot?.draw(in: rect)
             
             // get current context
             var context = UIGraphicsGetCurrentContext()!
             
             // manipulate context
-            delegate?.manipulateFilterContext(&context, rect: rect)
-
+            delegate?.manipulateFilterContext(context: &context, rect: rect)
+            
             // make views visible again
-            self.setAlphaForViews(excludedViews, alpha: 1.0)
+            self.setAlphaForViews(views: excludedViews, alpha: 1.0)
         }
     }
-
+    
     //MARK:- Control functions
     
     internal func setExcludedViews(views: [UIView]?)
@@ -114,78 +113,78 @@ class BKFilterView: UIView {
     
     internal func revealCircular(duration: CFTimeInterval = 0.3, completion: (() -> Void)?)
     {
-        self.userInteractionEnabled = false
+        self.isUserInteractionEnabled = false
         
         let maskLayerRadius = CGFloat(hypotf(Float(self.bounds.size.width), Float(self.bounds.size.height))) / 2.0
         let maskLayerEdgeLength: CGFloat = (maskLayerRadius * 2.0)
-        let maskLayerBounds: CGRect = CGRectMake(0.0, 0.0, maskLayerEdgeLength, maskLayerEdgeLength)
-        let maskLayerPosition: CGPoint = CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height/2.0)
+        let maskLayerBounds: CGRect = CGRect(x: 0.0, y: 0.0, width: maskLayerEdgeLength, height: maskLayerEdgeLength)
+        let maskLayerPosition: CGPoint = CGPoint(x: self.bounds.size.width/2.0, y: self.bounds.size.height/2.0)
         
         let maskLayer = CAShapeLayer()
-        maskLayer.bounds = CGRectMake((self.bounds.size.width-1.0)/2.0, (self.bounds.size.height-1.0)/2.0, 1.0, 1.0)
-        maskLayer.path = UIBezierPath(roundedRect: maskLayer.bounds, cornerRadius: maskLayer.bounds.size.width/2.0).CGPath
+        maskLayer.bounds = CGRect(x: (self.bounds.size.width-1.0)/2.0, y: (self.bounds.size.height-1.0)/2.0, width: 1.0, height: 1.0)
+        maskLayer.path = UIBezierPath(roundedRect: maskLayer.bounds, cornerRadius: maskLayer.bounds.size.width/2.0).cgPath
         maskLayer.position = maskLayerPosition
-        maskLayer.anchorPoint = CGPointMake(0.5, 0.5)
+        maskLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.layer.mask = maskLayer
         
         let pathAnimation: CABasicAnimation = CABasicAnimation(keyPath: "path")
-        pathAnimation.toValue = UIBezierPath(roundedRect: maskLayerBounds, cornerRadius: maskLayerRadius).CGPath
+        pathAnimation.toValue = UIBezierPath(roundedRect: maskLayerBounds, cornerRadius: maskLayerRadius).cgPath
         
         let boundsAnimation: CABasicAnimation = CABasicAnimation(keyPath: "bounds")
-        boundsAnimation.toValue = NSValue(CGRect: maskLayerBounds)
-
+        boundsAnimation.toValue = NSValue(cgRect: maskLayerBounds)
+        
         let animationGroup: CAAnimationGroup = CAAnimationGroup()
         animationGroup.animations = [pathAnimation, boundsAnimation]
-        animationGroup.removedOnCompletion = false
+        animationGroup.isRemovedOnCompletion = false
         animationGroup.duration = duration
-        animationGroup.fillMode  = kCAFillModeForwards
-
+        animationGroup.fillMode  = CAMediaTimingFillMode.forwards
+        
         CATransaction.begin()
         CATransaction.setCompletionBlock({ () -> Void in
             maskLayer.removeFromSuperlayer()
-            self.userInteractionEnabled = true
+            self.isUserInteractionEnabled = true
             completion?()
         })
-        maskLayer.addAnimation(animationGroup, forKey: "animationGroup")
+        maskLayer.add(animationGroup, forKey: "animationGroup")
         CATransaction.commit()
     }
     
     internal func hideCircular(duration: CFTimeInterval = 0.3, completion: (() -> Void)?)
     {
-        self.userInteractionEnabled = false
+        self.isUserInteractionEnabled = false
         
         let maskLayerRadius: CGFloat = 1.0
         let maskLayerEdgeLength: CGFloat = (maskLayerRadius * 2.0)
-        let maskLayerBounds: CGRect = CGRectMake((self.bounds.size.width-maskLayerEdgeLength)/2.0, (self.bounds.size.height-maskLayerEdgeLength)/2.0, maskLayerEdgeLength, maskLayerEdgeLength)
-        let maskLayerPosition: CGPoint = CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height/2.0)
+        let maskLayerBounds: CGRect = CGRect(x: (self.bounds.size.width-maskLayerEdgeLength)/2.0, y: (self.bounds.size.height-maskLayerEdgeLength)/2.0, width: maskLayerEdgeLength, height: maskLayerEdgeLength)
+        let maskLayerPosition: CGPoint = CGPoint(x: self.bounds.size.width/2.0, y: self.bounds.size.height/2.0)
         let fromRadius: CGFloat = CGFloat(hypotf(Float(self.bounds.size.width), Float(self.bounds.size.height))) / 2.0
         
         let maskLayer = CAShapeLayer()
-        maskLayer.bounds = CGRectMake(0.0, 0.0, (2 * fromRadius), (2 * fromRadius))
-        maskLayer.path = UIBezierPath(roundedRect: maskLayer.bounds, cornerRadius: fromRadius).CGPath
+        maskLayer.bounds = CGRect(x: 0.0, y: 0.0, width: (2 * fromRadius), height: (2 * fromRadius))
+        maskLayer.path = UIBezierPath(roundedRect: maskLayer.bounds, cornerRadius: fromRadius).cgPath
         maskLayer.position = maskLayerPosition
-        maskLayer.anchorPoint = CGPointMake(0.5, 0.5)
+        maskLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.layer.mask = maskLayer
         
         let pathAnimation: CABasicAnimation = CABasicAnimation(keyPath: "path")
-        pathAnimation.toValue = UIBezierPath(roundedRect: maskLayerBounds, cornerRadius: maskLayerRadius).CGPath
+        pathAnimation.toValue = UIBezierPath(roundedRect: maskLayerBounds, cornerRadius: maskLayerRadius).cgPath
         
         let boundsAnimation: CABasicAnimation = CABasicAnimation(keyPath: "bounds")
-        boundsAnimation.toValue = NSValue(CGRect: maskLayerBounds)
+        boundsAnimation.toValue = NSValue(cgRect: maskLayerBounds)
         
         let animationGroup: CAAnimationGroup = CAAnimationGroup()
         animationGroup.animations = [pathAnimation, boundsAnimation]
-        animationGroup.removedOnCompletion = false
+        animationGroup.isRemovedOnCompletion = false
         animationGroup.duration = 0.3
-        animationGroup.fillMode  = kCAFillModeForwards
+        animationGroup.fillMode  = CAMediaTimingFillMode.forwards
         
         CATransaction.begin()
         CATransaction.setCompletionBlock({ () -> Void in
             maskLayer.removeFromSuperlayer()
-            self.userInteractionEnabled = true
+            self.isUserInteractionEnabled = true
             completion?()
         })
-        maskLayer.addAnimation(animationGroup, forKey: "animationGroup")
+        maskLayer.add(animationGroup, forKey: "animationGroup")
         CATransaction.commit()
     }
     
@@ -210,17 +209,17 @@ class BKFilterView: UIView {
 
 //MARK:- UIApplication extension
 extension UIApplication {
-    class func topViewController(base: UIViewController? = (UIApplication.sharedApplication().delegate as! AppDelegate).window?.rootViewController) -> UIViewController? {
+    class func topViewController(base: UIViewController? = (UIApplication.shared.delegate as! AppDelegate).window?.rootViewController) -> UIViewController? {
         if let nav = base as? UINavigationController {
-            return topViewController(nav.visibleViewController)
+            return topViewController(base: nav.visibleViewController)
         }
         if let tab = base as? UITabBarController {
             if let selected = tab.selectedViewController {
-                return topViewController(selected)
+                return topViewController(base: selected)
             }
         }
         if let presented = base?.presentedViewController {
-            return topViewController(presented)
+            return topViewController(base: presented)
         }
         return base
     }
