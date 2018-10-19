@@ -54,7 +54,7 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
     
     //MARK:- Control functions
     
-    internal func setFiltertype(type: BKFilterType) {
+    func setFiltertype(type: BKFilterType) {
         
         self.title = type.rawValue
         filterType = type
@@ -67,7 +67,7 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
         filterView.autoresizingMask = [UIView.AutoresizingMask.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin ,.flexibleBottomMargin]
         self.view.addSubview(filterView)
         
-        let gesture = UIPanGestureRecognizer(target: self, action: Selector(("viewDragged:")))
+        let gesture = UIPanGestureRecognizer(target: self, action: #selector((viewDragged(gesture:))))
         gesture.cancelsTouchesInView = false
         filterView.addGestureRecognizer(gesture)
         
@@ -78,12 +78,12 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
     
     //MARK:- BKFilterViewDelegate
     
-    internal func exculdedViews() -> [UIView]?
+    func exculdedViews() -> [UIView]?
     {
         return nil
     }
     
-    internal func manipulateFilterContext( context: inout CGContext, rect: CGRect) {
+    func manipulateFilterContext( context: inout CGContext, rect: CGRect) {
         
         var filterValues = [String: AnyObject?]()
         let centerVector = CIVector(x: rect.size.width*1.5, y: rect.size.height*1.5)
@@ -109,7 +109,7 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
     
     //MARK:- Private functions
     
-    internal func viewDragged(gesture: UIPanGestureRecognizer)
+    @objc func viewDragged(gesture: UIPanGestureRecognizer)
     {
         let filterView = gesture.view as! BKFilterView
         let translation = gesture.translation(in: filterView) as CGPoint
@@ -146,7 +146,7 @@ class FilterDemonstationViewController: UIViewController, BKFilterViewDelegate {
     
     //MARK:- Button actions
     
-    @objc internal func leftMenuButtonAction(button: UIButton)
+    @objc func leftMenuButtonAction(button: UIButton)
     {
         self.navigationController?.dismiss(animated: true, completion: { () -> Void in
         })

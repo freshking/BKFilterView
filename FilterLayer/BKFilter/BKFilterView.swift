@@ -106,12 +106,12 @@ class BKFilterView: UIView {
     
     //MARK:- Control functions
     
-    internal func setExcludedViews(views: [UIView]?)
+    func setExcludedViews(views: [UIView]?)
     {
         presetExcludedViews = views
     }
     
-    internal func revealCircular(duration: CFTimeInterval = 0.3, completion: (() -> Void)?)
+    func revealCircular(duration: CFTimeInterval = 0.3, completion: (() -> Void)?)
     {
         self.isUserInteractionEnabled = false
         
@@ -149,7 +149,7 @@ class BKFilterView: UIView {
         CATransaction.commit()
     }
     
-    internal func hideCircular(duration: CFTimeInterval = 0.3, completion: (() -> Void)?)
+    func hideCircular(duration: CFTimeInterval = 0.3, completion: (() -> Void)?)
     {
         self.isUserInteractionEnabled = false
         
