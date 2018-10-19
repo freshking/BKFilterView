@@ -67,7 +67,7 @@ enum BKFilterType: String {
         Vignette]
     
     //MARK:- CICategoryDistortionEffect
-
+    
     //TODO: Some distorion effets require additional input to th CIFilter. Implement this.
     
     case BumpDistortion = "CIBumpDistortion"
@@ -102,7 +102,7 @@ enum BKFilterType: String {
         TwirlDistortion]
     
     //MARK:- CICategoryHalftoneEffect
-
+    
     case CircularScreen = "CICircularScreen"
     case CMYKHalftone = "CICMYKHalftone"
     case DotScreen = "CIDotScreen"
@@ -117,7 +117,7 @@ enum BKFilterType: String {
         LineScreen]
     
     //MARK:- CICategoryTileEffect
-
+    
     //TODO: Some distorion effets require additional input to th CIFilter. Implement this.
     
     case AffineClamp = "CIAffineClamp"
@@ -158,7 +158,7 @@ enum BKFilterType: String {
     //MARK:- CICategoryStylize
     
     //TODO: Some distorion effets require additional input to th CIFilter. Implement this.
-
+    
     case BlendWithAlphaMask = "CIBlendWithAlphaMask"
     case BlendWithMask = "CIBlendWithMask"
     case Bloom = "CIBloom"
@@ -182,7 +182,7 @@ enum BKFilterType: String {
     case ShadedMaterial = "CIShadedMaterial"
     case SpotColor = "CISpotColor"
     case SpotLight = "CISpotLight"
-
+    
     static private let stylizeFilters: [BKFilterType] = [
         BlendWithAlphaMask,
         BlendWithMask,
